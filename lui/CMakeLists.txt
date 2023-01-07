@@ -8,8 +8,6 @@ add_library(lui SHARED
 	"lui.def")
 if(${CMAKE_SYSTEM} MATCHES "Windows")
     target_link_libraries(lui PRIVATE lua54 ui stdc++ uxtheme comctl32 d2d1 dwrite)
-elif(${CMAKE_SYSTEM} MATCHES "Darwin")
-    target_link_libraries(lui PRIVATE lua54 ui)
 else()
     target_link_libraries(lui PRIVATE lua54 ui)
 endif()
