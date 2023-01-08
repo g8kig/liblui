@@ -117,7 +117,7 @@ static int lui_wrapMenuItem(lua_State *L, uiMenuItem *mi, const char *text, int 
 		uiMenuItemOnClicked(mi, lui_menuitemOnClickedCallback, L);
 		lui_registerObject(L, -1);
 	}
-	lui_registerObject(L, lua_gettop(L));
+  lui_registerMenuObject(L, lua_gettop(L));
 	return 1;
 }
 

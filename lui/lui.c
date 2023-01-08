@@ -65,6 +65,7 @@ typedef struct {
 } lui_object;
 
 #define LUI_OBJECT_REGISTRY "lui_object_registry"
+#define LUI_MENU_OBJECT_REGISTRY "lui_menu_object_registry"
 
 #define lui_enumItem(N, V) lua_pushstring(L, (N)); lua_pushinteger(L, (V)); lua_settable(L, -3);
 
@@ -290,17 +291,29 @@ static lui_object* lui_checkObject(lua_State *L, int pos)
 	return lobj;
 }
 
-/* lui control registry handling
- */
-static int lui_registerObject(lua_State *L, int pos)
+static void lui_registerCommon(lua_State *L, const char *registry, int pos)
 {
 	lui_object *lobj = lui_toObject(L, pos);
-	lua_getfield(L, LUA_REGISTRYINDEX, LUI_OBJECT_REGISTRY);
+	lua_getfield(L, LUA_REGISTRYINDEX, registry);
 	lua_pushlightuserdata(L, lobj->object);
 	lua_pushvalue(L, pos);
 	lua_settable(L, -3);
 	lua_pop(L, 1);
-	return 0;
+}
+
+/* lui control registry handling
+ */
+static void lui_registerObject(lua_State *L, int pos)
+{
+  lui_registerCommon(L, LUI_OBJECT_REGISTRY, pos);
+}
+
+/* lui control registry handling
+ */
+static void lui_registerMenuObject(lua_State *L, int pos)
+{
+  lui_registerObject(L, pos);
+  lui_registerCommon(L, LUI_MENU_OBJECT_REGISTRY, pos);
 }
 
 static int lui_findObject(lua_State *L, const uiControl *control)
@@ -1122,8 +1135,16 @@ int luaopen_liblui(lua_State *L)
 	/* create control registry */
 	lua_newtable(L);
 	lua_newtable(L);
+	lua_pushstring(L, "v");
+	lua_setfield(L, -2, "__mode");
 	lua_setmetatable(L, -2);
 	lua_setfield(L, LUA_REGISTRYINDEX, LUI_OBJECT_REGISTRY);
+
+	/* create menu control registry */
+	lua_newtable(L);
+	lua_newtable(L);
+	lua_setmetatable(L, -2);
+	lua_setfield(L, LUA_REGISTRYINDEX, LUI_MENU_OBJECT_REGISTRY);
 
 	/* register global onShouldQuit handler */
 	uiOnShouldQuit(lui_onShouldQuitCallback, L);
