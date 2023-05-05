@@ -13,9 +13,12 @@ struct uiWindow {
 	uiprivSingleChildConstraints constraints;
 	void (*onContentSizeChanged)(uiWindow *, void *);
 	void *onContentSizeChangedData;
+	BOOL suppressSizeChanged;
 	void (*onFocusChanged)(uiWindow*, void *);
 	void *onFocusChangedData;
-	BOOL suppressSizeChanged;
+	void (*onPositionChanged)(uiWindow*, void *);
+	void *onPositionChangedData;
+	BOOL suppressPositionChanged;
 	int fullscreen;
 	int borderless;
 	int resizeable;
@@ -34,44 +37,29 @@ struct uiWindow {
 	uiprivDoManualResize(self, initialEvent, edge);
 }
 
-@end
-
-@interface windowDelegateClass : NSObject<NSWindowDelegate> {
-	uiprivMap *windows;
-}
-- (BOOL)windowShouldClose:(id)sender;
-- (void)windowDidResize:(NSNotification *)note;
-- (void)windowDidEnterFullScreen:(NSNotification *)note;
-- (void)windowDidExitFullScreen:(NSNotification *)note;
-- (void)windowDidBecomeKey:(NSNotification *)note;
-- (void)windowDidResignKey:(NSNotification *)note;
-- (void)registerWindow:(uiWindow *)w;
-- (void)unregisterWindow:(uiWindow *)w;
-- (uiWindow *)lookupWindow:(NSWindow *)w;
-@end
-
-@implementation windowDelegateClass
-
-- (id)init
+- (id)initWithWidth:(CGFloat)width height:(CGFloat)height uiWindow:(uiWindow *)w
 {
-	self = [super init];
-	if (self)
-		self->windows = uiprivNewMap();
+	self = [super initWithContentRect:NSMakeRect(0, 0, width, height)
+		styleMask:defaultStyleMask
+		backing:NSBackingStoreBuffered
+		defer:YES];
+
+	if (self) {
+		self->window = w;
+
+		// Do NOT release when closed, we manually do so by calling
+		// uiWindowDestroy()
+		[self setReleasedWhenClosed:NO];
+
+		[self setDelegate:self];
+	}
 	return self;
-}
-
-- (void)dealloc
-{
-	uiprivMapDestroy(self->windows);
-	[super dealloc];
 }
 
 - (BOOL)windowShouldClose:(id)sender
 {
-	uiWindow *w;
+	uiWindow *w = self->window;
 
-	w = [self lookupWindow:((NSWindow *) sender)];
-	// w should not be NULL; we are only the delegate of registered windows
 	if ((*(w->onClosing))(w, w->onClosingData))
 		uiControlDestroy(uiControl(w));
 	return NO;
@@ -79,73 +67,58 @@ struct uiWindow {
 
 - (void)windowDidResize:(NSNotification *)note
 {
-	uiWindow *w;
+	uiWindow *w = self->window;
 
-	w = [self lookupWindow:((NSWindow *) [note object])];
 	if (!w->suppressSizeChanged)
 		(*(w->onContentSizeChanged))(w, w->onContentSizeChangedData);
 }
 
+- (void)windowDidMove:(NSNotification *)note
+{
+	uiWindow *w = self->window;
+
+	if (!w->suppressPositionChanged)
+		(*(w->onPositionChanged))(w, w->onPositionChangedData);
+}
+
 - (void)windowDidEnterFullScreen:(NSNotification *)note
 {
-	uiWindow *w;
+	uiWindow *w = self->window;
 
-	w = [self lookupWindow:((NSWindow *) [note object])];
 	if (!w->suppressSizeChanged)
 		w->fullscreen = 1;
 }
 
 - (void)windowDidExitFullScreen:(NSNotification *)note
 {
-	uiWindow *w;
+	uiWindow *w = self->window;
 
-	w = [self lookupWindow:((NSWindow *) [note object])];
 	if (!w->suppressSizeChanged)
 		w->fullscreen = 0;
 }
 
 - (void)windowDidBecomeKey:(NSNotification *)note
 {
-	uiWindow *w;
+	uiWindow *w = self->window;
 
-	w = [self lookupWindow:((NSWindow *) [note object])];
 	w->focused = 1;
 	(*(w->onFocusChanged))(w, w->onFocusChangedData);
 }
 
 - (void)windowDidResignKey:(NSNotification *)note
 {
-	uiWindow *w;
+	uiWindow *w = self->window;
 
-	w = [self lookupWindow:((NSWindow *) [note object])];
 	w->focused = 0;
 	(*(w->onFocusChanged))(w, w->onFocusChangedData);
 }
 
-- (void)registerWindow:(uiWindow *)w
+- (uiWindow *)window
 {
-	uiprivMapSet(self->windows, w->window, w);
-	[w->window setDelegate:self];
-}
-
-- (void)unregisterWindow:(uiWindow *)w
-{
-	[w->window setDelegate:nil];
-	uiprivMapDelete(self->windows, w->window);
-}
-
-- (uiWindow *)lookupWindow:(NSWindow *)w
-{
-	uiWindow *v;
-
-	v = uiWindow(uiprivMapGet(self->windows, w));
-	// this CAN (and IS ALLOWED TO) return NULL, just in case we're called with some OS X-provided window as the key window
-	return v;
+	return self->window;
 }
 
 @end
-
-static windowDelegateClass *windowDelegate = nil;
 
 static void removeConstraints(uiWindow *w)
 {
@@ -167,7 +140,6 @@ static void uiWindowDestroy(uiControl *c)
 		uiDarwinControlSetSuperview(uiDarwinControl(w->child), nil);
 		uiControlDestroy(w->child);
 	}
-	[windowDelegate unregisterWindow:w];
 	[w->window release];
 	uiFreeControl(uiControl(w));
 }
@@ -198,14 +170,14 @@ static int uiWindowVisible(uiControl *c)
 
 static void uiWindowShow(uiControl *c)
 {
-	uiWindow *w = (uiWindow *) c;
+	uiWindow *w = uiWindow(c);
 
 	[w->window makeKeyAndOrderFront:w->window];
 }
 
 static void uiWindowHide(uiControl *c)
 {
-	uiWindow *w = (uiWindow *) c;
+	uiWindow *w = uiWindow(c);
 
 	[w->window orderOut:w->window];
 }
@@ -277,6 +249,43 @@ char *uiWindowTitle(uiWindow *w)
 void uiWindowSetTitle(uiWindow *w, const char *title)
 {
 	[w->window setTitle:uiprivToNSString(title)];
+}
+
+void uiWindowPosition(uiWindow *w, int *x, int *y)
+{
+	NSRect screen;
+	NSRect window;
+	int screenHeightSansMenu;
+
+	screen = [[w->window screen] visibleFrame];
+	// Visible screen (no menu, no dock) + dock height
+	screenHeightSansMenu = screen.size.height + screen.origin.y;
+
+	window = [w->window frame];
+	*x = window.origin.x;
+	*y = screenHeightSansMenu - window.origin.y - window.size.height;
+}
+
+void uiWindowSetPosition(uiWindow *w, int x, int y)
+{
+	NSRect screen;
+	int screenHeightSansMenu;
+
+	screen = [[w->window screen] visibleFrame];
+	// Visible screen (no menu, no dock) + dock height
+	screenHeightSansMenu = screen.size.height + screen.origin.y;
+
+	y = screenHeightSansMenu - y;
+
+	w->suppressPositionChanged = YES;
+	[w->window setFrameTopLeftPoint:NSMakePoint(x, y)];
+	w->suppressPositionChanged = NO;
+}
+
+void uiWindowOnPositionChanged(uiWindow *w, void (*f)(uiWindow *, void *), void *data)
+{
+	w->onPositionChanged = f;
+	w->onPositionChangedData = data;
 }
 
 void uiWindowContentSize(uiWindow *w, int *width, int *height)
@@ -430,25 +439,16 @@ uiWindow *uiNewWindow(const char *title, int width, int height, int hasMenubar)
 
 	uiDarwinNewControl(uiWindow, w);
 
-	w->resizeable = TRUE;
-	w->window = [[uiprivNSWindow alloc] initWithContentRect:NSMakeRect(0, 0, (CGFloat) width, (CGFloat) height)
-		styleMask:defaultStyleMask
-		backing:NSBackingStoreBuffered
-		defer:YES];
-	[w->window setTitle:uiprivToNSString(title)];
+	w->window = [[uiprivNSWindow alloc] initWithWidth:(CGFloat)width
+		height:(CGFloat)height
+		uiWindow:w];
+	uiWindowSetTitle(w, title);
+	uiWindowSetResizeable(w, 1);
 
-	// do NOT release when closed
-	// we manually do this in uiWindowDestroy() above
-	[w->window setReleasedWhenClosed:NO];
-
-	if (windowDelegate == nil) {
-		windowDelegate = [[windowDelegateClass new] autorelease];
-		[uiprivDelegates addObject:[NSValue valueWithPointer:&windowDelegate]];
-	}
-	[windowDelegate registerWindow:w];
 	uiWindowOnClosing(w, defaultOnClosing, NULL);
 	uiWindowOnFocusChanged(w, defaultOnFocusChanged, NULL);
 	uiWindowOnContentSizeChanged(w, defaultOnPositionContentSizeChanged, NULL);
+	uiWindowOnPositionChanged(w, defaultOnPositionContentSizeChanged, NULL);
 
 	return w;
 }
@@ -458,7 +458,10 @@ uiWindow *uiprivWindowFromNSWindow(NSWindow *w)
 {
 	if (w == nil)
 		return NULL;
-	if (windowDelegate == nil)		// no windows were created yet; we're called with some OS X-provided window
+	// Apparently we might get called with a "fake" window prior to us creating
+	// any window - at least this is what the previous comments here suggested.
+	if (![w isKindOfClass:[uiprivNSWindow class]])
 		return NULL;
-	return [windowDelegate lookupWindow:w];
+
+	return [(uiprivNSWindow *)w window];
 }

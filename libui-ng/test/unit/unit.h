@@ -21,6 +21,9 @@ int buttonRunUnitTests(void);
 int comboboxRunUnitTests(void);
 int checkboxRunUnitTests(void);
 int radioButtonsRunUnitTests(void);
+int entryRunUnitTests(void);
+int menuRunUnitTests(void);
+int progressBarRunUnitTests(void);
 
 /**
  * Helper for general setup/teardown of controls embedded in a window.
@@ -29,6 +32,11 @@ struct state {
 	uiWindow *w;
 	uiControl *c;
 };
+
+int unitWindowOnClosingQuit(uiWindow *w, void *data);
+
+#define UNIT_TEST_WINDOW_WIDTH 300
+#define UNIT_TEST_WINDOW_HEIGHT 200
 
 /**
  * Helper for setting up the state variable used in unit tests.
