@@ -1,0 +1,5 @@
+C:/Users/Paul/Documents/liblui/lua-5.4.6/build/CMakeFiles/lua54.dir
+C:/Users/Paul/Documents/liblui/lua-5.4.6/build/CMakeFiles/lua.dir
+C:/Users/Paul/Documents/liblui/lua-5.4.6/build/CMakeFiles/luac.dir
+C:/Users/Paul/Documents/liblui/lua-5.4.6/build/CMakeFiles/edit_cache.dir
+C:/Users/Paul/Documents/liblui/lua-5.4.6/build/CMakeFiles/rebuild_cache.dir

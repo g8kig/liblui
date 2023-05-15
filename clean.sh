@@ -2,7 +2,7 @@ set -e
 pushd ./libui-ng
 [ -d ./build ] && rm -r ./build
 popd
-pushd ./lua-5.4.4
+pushd ./lua-5.4.6
 [ -d ./build ] && rm -r ./build
 popd
 pushd ./lui

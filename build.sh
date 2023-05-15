@@ -5,7 +5,7 @@ mkdir ./build
 meson setup build --buildtype=release --default-library=shared --layout=mirror
 ninja -C ./build
 popd
-pushd ./lua-5.4.4
+pushd ./lua-5.4.6
 [ -d ./build ] && rm -r ./build
 mkdir ./build
 cmake -G"Ninja" -DCMAKE_BUILD_TYPE=Release  -S . -B ./build

@@ -3,7 +3,7 @@ set CURDIR=%cd%
 rd /s/q %CURDIR%\run
 mkdir %CURDIR%\run
 
-cd %CURDIR%\lua-5.4.4
+cd %CURDIR%\lua-5.4.6
 copy build\liblua54.dll %CURDIR%\run
 copy build\lua.exe %CURDIR%\run
 cd %CURDIR%\lui
