@@ -7,11 +7,11 @@ add_library(lui SHARED
 	"luad.c"
 	"lui.def")
 if(${CMAKE_SYSTEM} MATCHES "Windows")
-    target_link_libraries(lui PRIVATE lua54 ui stdc++ uxtheme comctl32 d2d1 dwrite)
+    target_link_libraries(lui PRIVATE lua55 ui stdc++ uxtheme comctl32 d2d1 dwrite)
 else()
-    target_link_libraries(lui PRIVATE lua54 ui)
+    target_link_libraries(lui PRIVATE lua55 ui)
 endif()
-target_include_directories(lui PRIVATE "../libui-ng" "../lua-5.4.7/src")
-target_link_directories(lui PRIVATE "../libui-ng/build" "../lua-5.4.7/build")
+target_include_directories(lui PRIVATE "../libui-ng" "../lua-5.5.0/src")
+target_link_directories(lui PRIVATE "../libui-ng/build" "../lua-5.5.0/build")
 #target_compile_definitions(lui PUBLIC DEBUG=1)
 

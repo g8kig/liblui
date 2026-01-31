@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.16)
 set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64" CACHE STRING "" FORCE)
-project(lua547)
+project(lua550)
 
-add_library(lua54 SHARED
+add_library(lua55 SHARED
 	"src/lapi.c"
 	"src/lauxlib.c"
 	"src/lbaselib.c"
@@ -35,20 +35,20 @@ add_library(lua54 SHARED
 	"src/lvm.c"
 	"src/lzio.c"
 	"src/lutf8lib.c"
-	"src/lua54.def")
+	"src/lua55.def")
 include_directories(src)
 if(${CMAKE_SYSTEM} MATCHES "Windows")
-	set_target_properties(lua54 PROPERTIES COMPILE_DEFINITIONS "LUA_BUILD_AS_DLL=1")
+	set_target_properties(lua55 PROPERTIES COMPILE_DEFINITIONS "LUA_BUILD_AS_DLL=1")
 elseif(${CMAKE_SYSTEM} MATCHES "Linux")
-	set_target_properties(lua54 PROPERTIES COMPILE_DEFINITIONS "LUA_USE_LINUX=1 LUA_USE_READLINE=1")
-	target_link_libraries(lua54 PRIVATE readline dl m)
+	set_target_properties(lua55 PROPERTIES COMPILE_DEFINITIONS "LUA_USE_LINUX=1 LUA_USE_READLINE=1")
+	target_link_libraries(lua56 PRIVATE readline dl m)
 elseif(${CMAKE_SYSTEM} MATCHES "Darwin")
-	set_target_properties(lua54 PROPERTIES COMPILE_DEFINITIONS "LUA_USE_MACOSX=1 LUA_USE_READLINE=1")
+	set_target_properties(lua55 PROPERTIES COMPILE_DEFINITIONS "LUA_USE_MACOSX=1 LUA_USE_READLINE=1")
 endif()
 
 add_executable(lua "src/lua.c")
 include_directories(src)
-target_link_libraries(lua PRIVATE lua54)
+target_link_libraries(lua PRIVATE lua55)
 
 add_executable(luac 
 	"src/luac.c" 	
