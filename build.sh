@@ -1,3 +1,4 @@
+#! /bin/bash
 set -e
 pushd ./libui-ng
 [ -d ./build ] && rm -r ./build
