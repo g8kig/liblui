@@ -84,6 +84,10 @@ static void minMaxAutoLayoutSizes(NSWindow *w, NSSize *min, NSSize *max)
 	NSView *contentView;
 	NSRect prevFrame;
 
+	const NSSize size = [[NSScreen mainScreen] frame].size;
+	const CGFloat screenWidth = size.width;
+	const CGFloat screenHeight = size.height;
+
 	// if adding these constraints causes the window to change size somehow, don't show it to the user and change it back afterwards
 	NSDisableScreenUpdates();
 	prevFrame = [w frame];
@@ -113,14 +117,14 @@ static void minMaxAutoLayoutSizes(NSWindow *w, NSSize *min, NSSize *max)
 	cw = uiprivMkConstraint(contentView, NSLayoutAttributeWidth,
 		NSLayoutRelationEqual,
 		nil, NSLayoutAttributeNotAnAttribute,
-		0, 16384,  // Reasonable maximum instead of CGFLOAT_MAX
+		0, screenWidth,  // Reasonable maximum instead of CGFLOAT_MAX
 		@"window maximum width finding constraint");
 	[cw setPriority:NSLayoutPriorityDragThatCanResizeWindow];
 	[contentView addConstraint:cw];
 	ch = uiprivMkConstraint(contentView, NSLayoutAttributeHeight,
 		NSLayoutRelationEqual,
 		nil, NSLayoutAttributeNotAnAttribute,
-		0, 16384,  // Reasonable maximum instead of CGFLOAT_MAX
+		0, screenHeight,  // Reasonable maximum instead of CGFLOAT_MAX
 		@"window maximum height finding constraint");
 	[ch setPriority:NSLayoutPriorityDragThatCanResizeWindow];
 	[contentView addConstraint:ch];
