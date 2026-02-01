@@ -113,14 +113,14 @@ static void minMaxAutoLayoutSizes(NSWindow *w, NSSize *min, NSSize *max)
 	cw = uiprivMkConstraint(contentView, NSLayoutAttributeWidth,
 		NSLayoutRelationEqual,
 		nil, NSLayoutAttributeNotAnAttribute,
-		0, CGFLOAT_MAX,
+		0, 16384,  // Reasonable maximum instead of CGFLOAT_MAX
 		@"window maximum width finding constraint");
 	[cw setPriority:NSLayoutPriorityDragThatCanResizeWindow];
 	[contentView addConstraint:cw];
 	ch = uiprivMkConstraint(contentView, NSLayoutAttributeHeight,
 		NSLayoutRelationEqual,
 		nil, NSLayoutAttributeNotAnAttribute,
-		0, CGFLOAT_MAX,
+		0, 16384,  // Reasonable maximum instead of CGFLOAT_MAX
 		@"window maximum height finding constraint");
 	[ch setPriority:NSLayoutPriorityDragThatCanResizeWindow];
 	[contentView addConstraint:ch];

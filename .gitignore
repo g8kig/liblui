@@ -33,3 +33,5 @@
 
 # Misc
 .DS_Store
+/lua-5.5.0/build
+/run
