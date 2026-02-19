@@ -61,9 +61,9 @@ The project includes sample applications demonstrating the usage of the GUI comp
 
 ## Credits
 
-https://github.com/libui-ng/libui-ng
-https://codeberg.org/gnarz/lui
-https://lua.org/
+- https://github.com/libui-ng/libui-ng
+- https://codeberg.org/gnarz/lui
+- https://lua.org/
 
 ## License
 
