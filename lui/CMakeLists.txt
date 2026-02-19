@@ -7,7 +7,7 @@ add_library(lui SHARED
 	"luad.c"
 	"lui.def")
 if(${CMAKE_SYSTEM} MATCHES "Windows")
-    target_link_libraries(lui PRIVATE lua55 ui stdc++ uxtheme comctl32 d2d1 dwrite)
+    target_link_libraries(lui PRIVATE lua55 libui windowscodecs uxtheme comctl32 d2d1 dwrite)
 else()
     target_link_libraries(lui PRIVATE lua55 ui)
 endif()

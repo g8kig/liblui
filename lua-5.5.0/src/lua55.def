@@ -42,11 +42,9 @@ EXPORTS
     lua_rawset
     lua_rawseti
     lua_rawsetp
-    lua_resetthread
     lua_resume
     lua_rotate
     lua_setallocf
-    lua_setcstacklimit
     lua_setfield
     lua_setglobal
     lua_sethook
@@ -118,7 +116,6 @@ EXPORTS
     luaL_loadstring
     luaL_newmetatable
     luaL_newstate
-    luaL_openlibs
     luaL_optinteger
     luaL_optlstring
     luaL_optnumber
