@@ -1,6 +1,6 @@
 # liblui
 
-Lua 5.4 GUI system using libui-ng and lui.
+Lua 5.x GUI system using libui-ng and lui.
 Cross platform Linux, MacOS and Windows
 
 ## Project Overview
@@ -19,8 +19,8 @@ libui-ng is a fork of andlabs/libui, a portable GUI library for C that uses the 
 **Key Features:**
 - Simple and portable GUI library in lua
 - Uses native GUI technologies for each platform
-- Supports Windows, Unix (GTK+ 3.10+), and Mac OS X (10.8+)
-- Build requirements: CMake and Ninja backend
+- Supports Windows, Unix (GTK+ 3.10+), and Mac OS X (10.10+)
+- Build requirements: Meson, CMake and Ninja backend
 
 **Platforms Supported:**
 - Windows: Windows 10 or newer
