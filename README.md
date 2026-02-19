@@ -3,6 +3,8 @@
 Lua 5.x GUI system using libui-ng and lui.
 Cross platform Linux, MacOS and Windows
 
+![clipping](https://github.com/user-attachments/assets/d2295696-387f-4bd9-a874-e3f65b8a41ca)
+
 ## Project Overview
 
 This project is a comprehensive GUI development framework that combines several components:
@@ -56,6 +58,12 @@ The project includes sample applications demonstrating the usage of the GUI comp
 - Controls samples
 - Table samples
 - Menu samples
+
+## Credits
+
+https://github.com/libui-ng/libui-ng
+https://codeberg.org/gnarz/lui
+https://lua.org/
 
 ## License
 
