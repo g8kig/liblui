@@ -229,8 +229,7 @@ elseif(APPLE)
     
 else()
     find_package(PkgConfig REQUIRED)
-    pkg_check_modules(GTK REQUIRED IMPORTED_TARGET gtk3>=3.10)
-    target_link_libraries(ui PRIVATE PkgConfig::GTK)
+    pkg_check_modules(GTK REQUIRED IMPORTED_TARGET gtk+-3.0>=3.10)
 
     set(LIBUI_PLATFORM_SOURCES
         unix/alloc.c
