@@ -12,6 +12,12 @@ mkdir ./build
 cmake -G"Ninja" -DCMAKE_BUILD_TYPE=Release  -S . -B ./build
 ninja -C ./build
 popd
+pushd ./lua-5.5.1
+[ -d ./build ] && rm -r ./build
+mkdir ./build
+cmake -G"Ninja" -DCMAKE_BUILD_TYPE=Release  -S . -B ./build
+ninja -C ./build
+popd
 pushd ./lui
 [ -d ./build ] && rm -r ./build
 mkdir ./build
