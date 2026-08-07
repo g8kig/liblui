@@ -22,18 +22,6 @@ if NOT ["%errorlevel%"]==["0"] (
     exit /b %errorlevel%
 )
 
-cd %CURDIR%\lua-5.5.1
-rd /s/q build
-mkdir build
-cmake -G"Ninja" -DCMAKE_BUILD_TYPE=Release  -S . -B ./build
-if NOT ["%errorlevel%"]==["0"] (
-    exit /b %errorlevel%
-)
-ninja -C build
-if NOT ["%errorlevel%"]==["0"] (
-    exit /b %errorlevel%
-)
-
 cd %CURDIR%\lui
 rd /s/q build
 mkdir build

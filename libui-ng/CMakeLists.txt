@@ -123,10 +123,13 @@ if(WIN32)
         windows/tableediting.cpp
         windows/tablemetrics.cpp
         windows/text.cpp
+        windows/tabpage.cpp
+        windows/text.cpp
+        windows/utf16.cpp
         windows/utilwin.cpp
         windows/winutil.cpp
         windows/winpublic.cpp
-        windows/utf16.cpp
+        windows/window.cpp
     )
     
     # Windows resource files
@@ -286,20 +289,32 @@ endif()
 set(LIBUI_SOURCES
     ${LIBUI_COMMON_SOURCES}
     ${LIBUI_PLATFORM_SOURCES}
+    ${LIBUI_PLATFORM_RESOURCES}
 )
 
 # Create the library
 add_library(ui ${LIBUI_SOURCES})
+add_library(libui ALIAS ui)
+
+# Define export macro for shared builds (code checks libui_EXPORTS)
+if(BUILD_SHARED_LIBS)
+    target_compile_definitions(ui PRIVATE libui_EXPORTS)
+endif()
 
 # Set library properties
 set_target_properties(ui PROPERTIES
-    PREFIX "lib"
+    OUTPUT_NAME "libui"
+    PREFIX ""
+    IMPORT_PREFIX ""
     VERSION 1.0.0
     SOVERSION 1
 )
 
 # Link libraries based on platform
 if(WIN32)
+    # Disable automatic manifest embedding (we embed via resources.rc)
+    set_target_properties(ui PROPERTIES WIN32_EXECUTABLE FALSE VS_DOTNET_REFERENCES "")
+    target_link_options(ui PRIVATE /MANIFEST:NO)
     target_link_libraries(ui 
         winmm
         gdi32
@@ -314,6 +329,7 @@ if(WIN32)
         dxgi
         d3d11
         UxTheme
+        windowscodecs
     )
     
 elseif(APPLE)
