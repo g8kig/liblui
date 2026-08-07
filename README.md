@@ -43,6 +43,7 @@ This project includes multiple versions of the Lua scripting language:
 - Lua 5.4.6
 - Lua 5.4.7
 - Lua 5.5.0
+- Lua 5.5.1
 
 These versions provide the runtime environment for Lua scripts and extensions.
 
